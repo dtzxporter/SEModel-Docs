@@ -66,8 +66,8 @@ typedef unsigned char vec4_b[4];
 ```
 ---
 ## SEModel File Structure
-The general structure of a *.semodel file conists of a 7 byte magic value containing the characters 'SEModel' followed by a 16bit version identifier, the file [header](#semodel-header), and then the data blocks.
-The data blocks must follow the order defined below; Although each of these data blocks is optional, there must be *at least* 1 data block (excluding the custom data block) present within a given file. (See [here](#semodel-data-flags) for more information on how to describe the presence of each of these data blocks).
+The general structure of a *.semodel file conists of a 7 byte magic value containing the characters 'SEModel' followed by a 16bit version identifier, the file [header](#semodel_header), and then the data blocks.
+The data blocks must follow the order defined below; Although each of these data blocks is optional, there must be *at least* 1 data block (excluding the custom data block) present within a given file. (See [here](#seanim_presence_flags) for more information on how to describe the presence of each of these data blocks).
 ```c++
 struct SEModel_File
 {
@@ -153,7 +153,7 @@ enum SEMODEL_TYPE
 ---
 
 ## SEMODEL_PRESENCE_FLAGS
-SEMODEL_PRESENCE_FLAGS describes the bitfields used by dataPresenceFlags in the [header](#semodel-header). It only contains information pertaining to the presence of types of data included in the file.
+SEMODEL_PRESENCE_FLAGS describes the bitfields used by dataPresenceFlags in the [header](#semodel_header). It only contains information pertaining to the presence of types of data included in the file.
 ```c++
 enum SEMODEL_PRESENCE_FLAGS
 {
@@ -176,7 +176,7 @@ enum SEMODEL_PRESENCE_FLAGS
 ---
 
 ## SEMODEL_BONEPRESENCE_FLAGS
-SEMODEL_BONEPRESENCE_FLAGS describes the bitfields used by boneDataPresenceFlags in the [header](#semodel-header). It only contains information pertaining to the presence of types of data included in the bone block.
+SEMODEL_BONEPRESENCE_FLAGS describes the bitfields used by boneDataPresenceFlags in the [header](#semodel_header). It only contains information pertaining to the presence of types of data included in the bone block.
 ```c++
 enum SEMODEL_BONEPRESENCE_FLAGS
 {
@@ -198,7 +198,7 @@ enum SEMODEL_BONEPRESENCE_FLAGS
 ---
 
 ## SEMODEL_MESHPRESENCE_FLAGS
-SEMODEL_MESHPRESENCE_FLAGS describes the bitfields used by meshDataPresenceFlags in the [header](#semodel-header). It only contains information pertaining to the presence of types of data included in the mesh vertex blocks.
+SEMODEL_MESHPRESENCE_FLAGS describes the bitfields used by meshDataPresenceFlags in the [header](#semodel_header). It only contains information pertaining to the presence of types of data included in the mesh vertex blocks.
 ```c++
 enum SEMODEL_MESHPRESENCE_FLAGS
 {
