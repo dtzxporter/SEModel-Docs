@@ -15,6 +15,11 @@ typedef unsigned long	uint32_t;	// 4 byte unsigned integer
 typedef signed long 	int32_t;	// 4 byte signed integer
 
 //
+// Half-precision data types
+//
+typedef unsigned short half_t;		// 2 byte floating-point data (IEEE 754-2008)
+
+//
 // string_t is used in this document to  describe a null terminated array of characters (a string)
 //
 typedef char string_t[];
@@ -27,6 +32,19 @@ typedef float vec3[3];
 typedef float quat_t[4]; // X Y Z W (Normalized)
 
 //
+// half vec types are used for data that doesn't require such high precision as a normal floating point number
+//
+typedef half_t vec2_h[2];
+typedef half_t vec3_h[3];
+
+//
+// byte vec types are used for color data and any small precision data
+//
+typedef unsigned char vec3_b[3];
+typedef unsigned char vec4_b[4];
+
+
+//
 // bone_t data type is used to describe bone indicies, its size is automatically determined by the number of bones in the model
 //
 #if boneCount <= 0xFF
@@ -36,11 +54,20 @@ typedef float quat_t[4]; // X Y Z W (Normalized)
 #else //elif boneCount <= 0xFFFFFFFF
 	typedef uint32_t bone_t;
 #endif
+
+//
+// mat_t data type is used to describe material indicies, its size is automatically determined by the number of materials in the model
+//
+#if matCount <= 0xFF
+	typedef uint8_t mat_t;
+#else
+	typedef uint16_t mat_t;
+#endif
 ```
 ---
 ## SEModel File Structure
-The general structure of a *.semodel file conists of a 7 byte magic value containing the characters 'SEModel' followed by a 16bit version identifier, the file [header](#seanim-header), and then the data blocks.
-The data blocks must follow the order defined below; Although each of these data blocks is optional, there must be *at least* 1 data block (excluding the custom data block) present within a given file. (See [here](#seanim-data-flags) for more information on how to describe the presence of each of these data blocks).
+The general structure of a *.semodel file conists of a 7 byte magic value containing the characters 'SEModel' followed by a 16bit version identifier, the file [header](#semodel-header), and then the data blocks.
+The data blocks must follow the order defined below; Although each of these data blocks is optional, there must be *at least* 1 data block (excluding the custom data block) present within a given file. (See [here](#semodel-data-flags) for more information on how to describe the presence of each of these data blocks).
 ```c++
 struct SEModel_File
 {
@@ -54,7 +81,20 @@ struct SEModel_File
 		SEModel_BoneData[header.boneCount];
 	}
 
-	
+	if (header.dataPresenceFlags & SEMODEL_PRESENCE_MESH)
+	{
+		SEModel_MeshData[header.meshCount];
+	}
+
+	if (header.dataPresenceFlags & SEMODEL_PRESENCE_COLLISION)
+	{
+		// TODO: Implement collision data
+	}
+
+	if (header.dataPresenceFlags & SEMODEL_PRESENCE_MATERIALS)
+	{
+		// TODO: Implement material data
+	}
 }
 ```
 
@@ -158,12 +198,12 @@ enum SEMODEL_BONEPRESENCE_FLAGS
 ---
 
 ## SEMODEL_MESHPRESENCE_FLAGS
-SEMODEL_MESHPRESENCE_FLAGS describes the bitfields used by meshDataPresenceFlags in the [header](#semodel-header). It only contains information pertaining to the presence of types of data included in the mesh blocks.
+SEMODEL_MESHPRESENCE_FLAGS describes the bitfields used by meshDataPresenceFlags in the [header](#semodel-header). It only contains information pertaining to the presence of types of data included in the mesh vertex blocks.
 ```c++
 enum SEMODEL_MESHPRESENCE_FLAGS
 {
 	// Whether or not meshes contain at least 1 uv layer
-	SEMODEL_PRESENCE_UVLAYER = 1 << 0,
+	SEMODEL_PRESENCE_UVSET = 1 << 0,
 
 	// Whether or not meshes contain vertex normals
 	SEMODEL_PRESENCE_NORMALS = 1 << 1,
@@ -204,7 +244,67 @@ struct SEModel_BoneData
 
 	if (header.boneDataPresenceFlags & SEMODEL_PRESENCE_SCALES)
 	{
-		vec3 scale;		// 1.0 is the default scale, 2.0 is twice as big, and 0.5 is half size
+		vec3 scale;	// 1.0 is the default scale, 2.0 is twice as big, and 0.5 is half size
 	}
+}
+```
+---
+
+## SEModel_MeshData
+```c++
+struct SEModel_MeshData
+{
+	uint8_t flags;
+
+	// The count of UV sets per vertex in this mesh
+	uint8_t uvSetCount;
+
+	// The count of verticies in the mesh
+	uint32_t vertexCount;
+	// The count of faces in the mesh, faces match D3DPT_TRIANGLELIST (DirectX) and VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST (Vulkan)
+	uint32_t faceCount;
+
+	SEModel_VertexData[vertexCount];
+	SEModel_FaceData[faceCount];
+}
+```
+---
+
+## SEModel_VertexData
+```c++
+struct SEModel_VertexData
+{
+	vec3 position;
+
+	if (header.meshDataPresenceFlags & SEMODEL_PRESENCE_UVSET)
+	{
+		vec2 uvCoords[mesh.uvSetCount];
+		mat_t uvMaterialIndicies[mesh.uvSetCount];
+	}
+
+	if (header.meshDataPresenceFlags & SEMODEL_PRESENCE_NORMALS)
+	{
+		vec3_h normal;
+	}
+
+	if (header.meshDataPresenceFlags & SEMODEL_PRESENCE_COLOR)
+	{
+		vec4_b color;
+	}
+
+	if (header.meshDataPresenceFlags & SEMODEL_PRESENCE_WEIGHTS)
+	{
+		bone_t boneIndex[header.maxSkinInfluence];
+		half_t boneWeight[header.maxSkinInfluence];
+	}
+}
+```
+---
+
+## SEModel_FaceData
+```c++
+struct SEModel_FaceData
+{
+	uint32_t Indicies[3];
 }
 ```
