@@ -41,3 +41,23 @@ typedef char string_t[];
 ## SEModel File Structure
 The general structure of a *.semodel file conists of a 7 byte magic value containing the characters 'SEModel' followed by a 16bit version identifier, the file [header](#seanim-header), and then the data blocks.
 The data blocks must follow the order defined below; Although each of these data blocks is optional, there must be *at least* 1 data block (excluding the custom data block) present within a given file. (See [here](#seanim-data-flags) for more information on how to describe the presence of each of these data blocks).
+```c++
+struct SEModel_File
+{
+	char magic[7];			// 'SEModel'
+	uint16_t version;		// The file version - the current version is 0x1
+	SEModel_Header header;
+}
+```
+
+## SEModel_Header
+The following defines the structure for the header structure of a SEModel file. Any reserved fields should be set to 0.
+```c++
+struct SEModel_Header
+{
+	// Contains the size of the header block in bytes, any extra data is ignored
+	uint16_t headerSize; // Currently 0xDEADBEEF
+
+	
+}
+```
