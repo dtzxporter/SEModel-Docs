@@ -67,7 +67,7 @@ typedef unsigned char vec4_b[4];
 ---
 ## SEModel File Structure
 The general structure of a *.semodel file conists of a 7 byte magic value containing the characters 'SEModel' followed by a 16bit version identifier, the file [header](#semodel_header), and then the data blocks.
-The data blocks must follow the order defined below; Although each of these data blocks is optional, there must be *at least* 1 data block (excluding the custom data block) present within a given file. (See [here](#seanim_presence_flags) for more information on how to describe the presence of each of these data blocks).
+The data blocks must follow the order defined below; Although each of these data blocks is optional, there must be *at least* 1 data block (excluding the custom data block) present within a given file. (See [here](#semodel_presence_flags) for more information on how to describe the presence of each of these data blocks).
 ```c++
 struct SEModel_File
 {
@@ -103,8 +103,8 @@ The following defines the structure for the header structure of a SEModel file. 
 ```c++
 struct SEModel_Header
 {
-	// Contains the size of the header block in bytes, any extra data is ignored
-	uint16_t headerSize; // Currently 0xDEADBEEF
+	// Contains the size of the header block in bytes, any extra data is ignored, ignoring headerSize itself.
+	uint16_t headerSize; // Currently 0x1C
 
 	// Model type flags, matches SEMODEL_TYPE
 	uint8_t modelType;
