@@ -141,13 +141,17 @@ struct SEModel_Header
 }
 ```
 ## SEMODEL_TYPE
-The following is the recommended values for modelType (SEMODEL_TYPE), note that this may be implementation defined and is not used for importing. See boneDataPresenceFlags to specify whether or not the model has bones.
+The following is the recommended values for modelType (SEMODEL_TYPE), note that this may be implementation defined and is not used for importing. See boneDataPresenceFlags to specify whether or not the model has bones. The first 3 and last entries are reserved for the following types.
 ```c++
 enum SEMODEL_TYPE
 {
-	SEMODEL_TYPE_STATIC,
-	SEMODEL_TYPE_DYNAMIC,
-	SEMODEL_TYPE_COLLISION
+	SEMODEL_TYPE_STATIC = 0x0,
+	SEMODEL_TYPE_DYNAMIC = 0x1,
+	SEMODEL_TYPE_COLLISION = 0x2,
+
+	// Insert implementation specific entries from 0x3-0xFE
+
+	SEMODEL_TYPE_UNKNOWN = 0xFF
 }
 ```
 ---
